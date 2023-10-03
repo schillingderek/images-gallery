@@ -6,7 +6,7 @@ const Header = ({ title }) => {
   return (
     <Navbar bg="dark" data-bs-theme="dark">
       <Container>
-        <Logo alt={title} style={{ maxWidth: "12rem", maxHeight: "3rem" }} />
+        <Logo alt={title} style={{ maxWidth: "15rem", maxHeight: "4rem" }} />
       </Container>
     </Navbar>
   );

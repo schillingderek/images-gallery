@@ -1,0 +1,15 @@
+{
+    "eslint.validate": [
+        "html",
+        "javascript",
+        "javascriptreact"
+    ],
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
+    "python.defaultInterpreterPath": "api/.venv/bin/python3",
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true
+      }
+}
