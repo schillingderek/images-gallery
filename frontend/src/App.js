@@ -22,10 +22,10 @@ const App = () => {
       console.log(error);
     }
   };
-  
+
   useEffect(() => {
     let isMounted = true;
-  
+
     const fetchData = async () => {
       try {
         const res = getSavedImages();
@@ -36,18 +36,40 @@ const App = () => {
         console.log(error);
       }
     };
-  
+
     fetchData();
-  
+
     // Cleanup function to run when the component is unmounted
     return () => {
       isMounted = false;
     };
   }, []);
-  
 
-  const handleImageDelete = (id) => {
+  const handleImageDelete = async (id) => {
+    const imageToBeDeleted = images.find((image) => image.id === id);
     setImages(images.filter((image) => image.id !== id));
+    try {
+      const res = await axios.delete(`${API_URL}/images/${id}`);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleSaveImage = async (id) => {
+    const imageToBeSaved = images.find((image) => image.id === id);
+    imageToBeSaved.saved = true;
+    try {
+      const res = await axios.post(`${API_URL}/images`, imageToBeSaved);
+      if (res.data?.inserted_id) {
+        setImages(
+          images.map((image) =>
+            image.id === id ? { ...image, saved: true } : image
+          )
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleSearchSubmit = async (e) => {
@@ -70,7 +92,11 @@ const App = () => {
           <Row xs={1} md={2} lg={3}>
             {images.map((image, i) => (
               <Col key={i} className="pb-3">
-                <ImageCard image={image} deleteImage={handleImageDelete} />
+                <ImageCard
+                  image={image}
+                  deleteImage={handleImageDelete}
+                  saveImage={handleSaveImage}
+                />
               </Col>
             ))}
           </Row>

@@ -40,7 +40,16 @@ def images():
     if request.method == "POST":
         image = request.get_json()
         image["_id"] = image.get("id")
-        return jsonify(images_collection.insert_one(image).inserted_id)
+        res =images_collection.insert_one(image)
+        inserted_id = res.inserted_id
+        return {"inserted_id": inserted_id}
+    
+@app.route("/images/<image_id>", methods=["DELETE"])
+def delete_image(image_id):
+    if request.method == "DELETE":
+        res = images_collection.delete_one({"_id": image_id})
+        return str(res.acknowledged)
+
 
 
 if __name__ == "__main__":
