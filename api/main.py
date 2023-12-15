@@ -45,10 +45,15 @@ def images():
         return {"inserted_id": inserted_id}
     
 @app.route("/images/<image_id>", methods=["DELETE"])
-def delete_image(image_id):
+def image(image_id):
     if request.method == "DELETE":
         res = images_collection.delete_one({"_id": image_id})
-        return str(res.acknowledged)
+        if not res:
+            return {"error": "Image was not deleted"}, 500
+        if res and not res.deleted_count:
+            return {"error": "Image not found"}, 404        
+        return {"deleted_id": image_id}
+
 
 
 
