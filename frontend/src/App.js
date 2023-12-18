@@ -8,6 +8,8 @@ import Welcome from "./components/Welcome";
 import Spinner from "./components/Spinner";
 import { Container, Row, Col } from "react-bootstrap";
 import React from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:5050";
 
@@ -16,46 +18,40 @@ const App = () => {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const savedImagesDownloaded = () => toast.success("Saved Images Downloaded!");
+  const newImageFound = () => toast.success(`New image ${word} was found`);
+  const imageSaved = (image) => toast.success(`Image ${image.title} was saved`);
+  const imageDeleted = (image) =>
+    toast.success(`Image ${image.title} was deleted`);
+  const toastError = (e) => toast.error(`An error occurred: ${e.message}`);
+
   const getSavedImages = async () => {
     try {
       const res = await axios.get(`${API_URL}/images`);
       setImages(res.data || []);
       setLoading(false);
+      savedImagesDownloaded();
     } catch (error) {
-      console.log(error);
+      toastError(error);
     }
   };
 
   useEffect(() => {
-    let isMounted = true;
-
-    const fetchData = async () => {
-      try {
-        const res = getSavedImages();
-        if (isMounted) {
-          setImages(res.data || []);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchData();
-
-    // Cleanup function to run when the component is unmounted
-    return () => {
-      isMounted = false;
-    };
+    if (loading) {
+      getSavedImages();
+    }
   }, []);
 
   const handleImageDelete = async (id) => {
+    const imageToBeDeleted = images.find((image) => image.id === id);
     try {
       const res = await axios.delete(`${API_URL}/images/${id}`);
       if (res.data?.deleted_id) {
         setImages(images.filter((image) => image.id !== id));
+        imageDeleted(imageToBeDeleted);
       }
     } catch (error) {
-      console.log(error);
+      toastError(error);
     }
   };
 
@@ -70,9 +66,11 @@ const App = () => {
             image.id === id ? { ...image, saved: true } : image
           )
         );
+        console.log(imageToBeSaved);
+        imageSaved(imageToBeSaved);
       }
     } catch (error) {
-      console.log(error);
+      toastError(error);
     }
   };
 
@@ -81,8 +79,9 @@ const App = () => {
     try {
       const res = await axios.get(`${API_URL}/new-image?query=${word}`);
       setImages([{ ...res.data, title: word }, ...images]);
+      newImageFound();
     } catch (error) {
-      console.log(error);
+      toastError(error);
     }
     setWord("");
   };
@@ -118,6 +117,18 @@ const App = () => {
           </Container>
         </>
       )}
+      <ToastContainer
+        position="bottom-right"
+        autoClose={1000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 };
