@@ -19,10 +19,10 @@ const App = () => {
   const [loading, setLoading] = useState(true);
 
   const savedImagesDownloaded = () => toast.success("Saved Images Downloaded!");
-  const newImageFound = () => toast.success(`New image ${word} was found`);
-  const imageSaved = (image) => toast.success(`Image ${image.title} was saved`);
+  const newImageFound = () => toast.info(`New image ${word.toUpperCase()} was found`);
+  const imageSaved = (image) => toast.info(`Image ${image.title.toUpperCase()} was saved`);
   const imageDeleted = (image) =>
-    toast.success(`Image ${image.title} was deleted`);
+    toast.warn(`Image ${image.title.toUpperCase()} was deleted`);
   const toastError = (e) => toast.error(`An error occurred: ${e.message}`);
 
   const getSavedImages = async () => {
